@@ -51,6 +51,100 @@
           </li>
         </ul>
       </div>
+      
+      <!-- 아울렛 -->
+      <div 
+        ref="outlets"
+        class="group outlets"
+        @mouseenter="categoryHover = -1">
+        <div 
+          class="group__title"
+          @click="toggleGroup('outlets')">
+          {{ navigations.outlets.title }}
+          <div class="toggle-list"></div>
+        </div>
+        <ul
+          v-show="isShowOutlets"
+          v-cloak
+          class="group__list">
+          <li
+            v-for="item in navigations.outlets.list"
+            :key="item.name">
+            <a :href="item.href">
+              <img 
+                :src="item.src"
+                :alt="item.name"
+                width="250" />
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 협력사 -->
+      <div
+        ref="partners"
+        class="group partners"
+        @mouseenter="categoryHover = -1">
+        <div
+          class="group__title"
+          @click="toggleGroup('partners')">
+          {{ navigations.partners.title }}
+          <div class="toggle-list"></div>
+        </div>
+        <ul
+          v-show="isShowPartners"
+          v-cloak
+          class="group__list">
+          <li
+            v-for="item in navigations.partners.list"
+            :key="item.name">
+            <a :href="item.href">
+              <img
+                :src="item.src"
+                :alt="item.name"
+                width="112" />
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 브랜드몰 -->
+      <div
+        ref="brandMall"
+        class="group brand-mall"
+        @mouseenter="categoryHover = -1">
+        <div
+          class="group__title"
+          @click="toggleGroup('brandMall')">
+          {{ navigations.brandMall.title }}
+          <div class="toggle-list"></div>
+        </div>
+        <ul
+          v-show="isShowBrandMall"
+          v-cloak
+          class="group__list">
+          <li
+            v-for="item in navigations.brandMall.list"
+            :key="item.name">
+            <a :href="item.href">
+              <img
+                :src="item.src"
+                :alt="item.name"
+                width="55" />
+              <span class="brand-name">{{ item.name }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!--전시 영역-->
+    <div class="exhibitions">
+      <a :href="navigations.exhibitions.href">
+        <img
+          :src="navigations.exhibitions.src"
+          :alt="navigations.exhibitions.name" />
+      </a>
     </div>
   </nav>
   <div 
@@ -61,12 +155,17 @@
 </template>
 
 <script>
+import _upperFirst from 'lodash/upperFirst'
+
 export default {
   data() {
     return {
       navigations: {},
       done: false,
       categoryHover: -1,
+      isShowOutlets: false,
+      isShowPartners: false,
+      isShowBrandMall: false,
     }
   },
   computed: {
@@ -87,6 +186,16 @@ export default {
     },
     offNav() {
       this.$store.dispatch('navigation/offNav')
+    },
+    toggleGroup (name) {
+      const pascalCaseName = _upperFirst(name)
+      const computedName = `isShow${pascalCaseName}`
+      this.$data[computedName] = !this.$data[computedName]
+      if (this.$data[computedName]) {
+        this.$nextTick(() => {
+          this.$refs.container.scrollTop = this.$refs.offsetTop - 75
+        })
+      }
     }
   },
 }
@@ -151,6 +260,27 @@ nav {
         font-size: 17px;
         font-weight: 700;
         position: relative;
+        .toggle-list {
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 60px;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          &::after {
+            content: "";
+            display: block;
+            width: 7px;
+            height: 7px;
+            margin-top: -3px;
+            border: solid #333;
+            border-width: 0 1px 1px 0;
+            box-sizing: border-box;
+            transform: rotate(45deg);
+          }
+        }
       }
       &__list {
         li {
@@ -252,6 +382,76 @@ nav {
             }
           }
         }
+      }
+      &.outlets {
+        .group__title {
+          cursor: pointer;
+        }
+        .group__list {
+          padding-bottom: 25px;
+          li {
+            height: auto;
+            margin-top: 10px;
+            padding-left: 25px;
+          }
+        }
+      }
+      &.partners {
+        .group__title {
+          cursor: pointer;
+        }
+        .group__list {
+          display: flex;
+          flex-wrap: wrap;
+          padding-bottom: 25px;
+          li {
+            width: 50%;
+            height: 60px;
+            a {
+              justify-content: center;
+            }
+          }
+        }
+      }
+      &.brand-mall {
+        .group__title {
+          cursor: pointer;
+        }
+        .group__list {
+          display: flex;
+          flex-wrap: wrap;
+          padding-bottom: 25px;
+          li {
+            width: 33.33%;
+            height: auto;
+            margin-top: 20px;
+            &:nth-child(-n+3) {
+              margin-top: 0;
+            }
+            a {
+              justify-content: center;
+              flex-direction: column;
+              span.brand-name {
+                font-size: 14px;
+                color: #666;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .exhibitions {
+    width: 300px;
+    height: 94px;
+    a {
+      display: block;
+      width: inherit;
+      height: inherit;
+      cursor: pointer;
+      img {
+        width: inherit;
+        height: inherit;
       }
     }
   }
